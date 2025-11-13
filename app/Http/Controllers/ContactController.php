@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\ContactMail;
+use App\Services\NotificationService;
 
 class ContactController extends Controller
 {
@@ -15,15 +14,13 @@ class ContactController extends Controller
             'email' => 'required|email',
             'message' => 'required',
         ]);
-    
+
         try {
-            Mail::to('laravelpagina@gmail.com')->send(new ContactMail($data));
+            // Usando el Singleton
+            NotificationService::getInstance()->sendContactEmail($data);
             return back()->with('success', 'Correo enviado correctamente...');
         } catch (\Exception $e) {
-            
-            dd($e->getMessage()); 
             return back()->with('error', 'Hubo un error al enviar el correo: ' . $e->getMessage());
         }
     }
-    
 }
